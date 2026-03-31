@@ -1,0 +1,57 @@
+services:
+  mongodb:
+    image: mongo:7
+    container_name: biasmirror-mongodb
+    restart: unless-stopped
+    volumes:
+      - mongo-data:/data/db
+
+  ml-service:
+    build:
+      context: .
+      dockerfile: ml-service/Dockerfile
+    container_name: biasmirror-ml
+    restart: unless-stopped
+    environment:
+      MODEL_VERSION: biasmirror-rf-v1
+    ports:
+      - "8000:8000"
+
+  server:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    container_name: biasmirror-server
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      MONGODB_URI: mongodb://mongodb:27017/biasmirror
+      JWT_ACCESS_SECRET: change-me-access
+      JWT_REFRESH_SECRET: change-me-refresh
+      ML_SERVICE_URL: http://ml-service:8000
+      CLIENT_URL: http://localhost:4173
+      ADMIN_EMAIL: admin@biasmirror.local
+      ADMIN_PASSWORD: Admin@12345
+      ADMIN_NAME: BiasMirror Admin
+    depends_on:
+      - mongodb
+      - ml-service
+    ports:
+      - "4000:4000"
+
+  client:
+    build:
+      context: .
+      dockerfile: client/Dockerfile
+    container_name: biasmirror-client
+    restart: unless-stopped
+    environment:
+      VITE_API_URL: http://localhost:4000
+    depends_on:
+      - server
+    ports:
+      - "4173:4173"
+
+volumes:
+  mongo-data:

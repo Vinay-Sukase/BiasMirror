@@ -1,0 +1,20 @@
+{
+  "name": "biasmirror",
+  "private": true,
+  "version": "1.0.0",
+  "workspaces": [
+    "client",
+    "server",
+    "shared"
+  ],
+  "scripts": {
+    "dev:client": "npm --workspace client run dev",
+    "dev:server": "npm --workspace server run dev",
+    "dev:ml": "python -m uvicorn --app-dir ml-service app.main:app --reload --host 0.0.0.0 --port 8000",
+    "test:client": "npm --workspace client run test",
+    "test:server": "npm --workspace server run test",
+    "lint:client": "npm --workspace client run lint",
+    "lint:server": "npm --workspace server run lint",
+    "train:model": "python ml-service/scripts/train_model.py"
+  }
+}
