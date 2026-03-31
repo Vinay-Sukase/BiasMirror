@@ -39,8 +39,9 @@ services:
       - key: MODEL_VERSION
         value: biasmirror-rf-v1
 
-  - type: static
+  - type: web
     name: biasmirror-client
+    runtime: static
     rootDir: .
     buildCommand: npm install && npm --workspace client run build
     staticPublishPath: client/dist
